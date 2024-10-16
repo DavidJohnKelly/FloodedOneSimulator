@@ -198,7 +198,8 @@ public class PlayField extends JPanel {
             overlayGraphic.draw(g2);
         }
 
-
+		FloodGraphic floodGraphic = new FloodGraphic();
+		floodGraphic.draw(g2);
 
 		// draw reference scale
 		this.refGraphic.draw(g2);
