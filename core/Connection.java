@@ -5,6 +5,7 @@
 package core;
 
 import routing.MessageRouter;
+import util.Tuple;
 
 /**
  * A connection between two DTN nodes.
@@ -224,6 +225,17 @@ public abstract class Connection {
 		(isUp() ? "up":"down") + 
 		(isTransferring() ? " transferring " + this.msgOnFly  + 
 				" from " + this.msgFromNode : "");
+	}
+
+	protected Tuple<Integer, Message> initialiseTransfer(DTNHost from, Message m) {
+		assert this.msgOnFly == null : "Already transferring " +
+				this.msgOnFly + " from " + this.msgFromNode + " to " +
+				this.getOtherNode(this.msgFromNode) + ". Can't " +
+				"start transfer of " + m + " from " + from;
+
+		this.msgFromNode = from;
+		Message newMessage = m.replicate();
+		return new Tuple<>(getOtherNode(from).receiveMessage(newMessage, from), newMessage);
 	}
 
 }

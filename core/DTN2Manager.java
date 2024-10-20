@@ -80,7 +80,7 @@ public class DTN2Manager {
 		String fname;
 		try {
 			fname = conf.getSetting("configFile");
-		} catch (SettingsError se) {
+		} catch (MissingSettingsError se) {
 			return;
 		}
 		f = new File(fname);

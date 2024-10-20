@@ -18,21 +18,21 @@ import routing.util.RoutingInfo;
  */
 public class DTNHost implements Comparable<DTNHost> {
 	private static int nextAddress = 0;
-	private int address;
+	private final int address;
 
 	private Coord location; 	// where is the host
 	private Coord destination;	// where is it going
 
 	private MessageRouter router;
-	private MovementModel movement;
+	private final MovementModel movement;
 	private Path path;
 	private double speed;
 	private double nextTimeToMove;
 	private String name;
-	private List<MessageListener> msgListeners;
-	private List<MovementListener> movListeners;
-	private List<NetworkInterface> net;
-	private ModuleCommunicationBus comBus;
+	private final List<MessageListener> msgListeners;
+	private final List<MovementListener> movListeners;
+	private final List<NetworkInterface> net;
+	private final ModuleCommunicationBus comBus;
 
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
@@ -57,7 +57,7 @@ public class DTNHost implements Comparable<DTNHost> {
 		this.location = new Coord(0,0);
 		this.address = getNextAddress();
 		this.name = groupId+address;
-		this.net = new ArrayList<NetworkInterface>();
+		this.net = new ArrayList<>();
 
 		for (NetworkInterface i : interf) {
 			NetworkInterface ni = i.replicate();
@@ -147,8 +147,8 @@ public class DTNHost implements Comparable<DTNHost> {
 	}
 	
 	/**
-	 * Returns this hosts's ModuleCommunicationBus
-	 * @return this hosts's ModuleCommunicationBus
+	 * Returns this host's ModuleCommunicationBus
+	 * @return this host's ModuleCommunicationBus
 	 */
 	public ModuleCommunicationBus getComBus() {
 		return this.comBus;
@@ -172,7 +172,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	 * @return a copy of the list of connections this host has with other hosts
 	 */
 	public List<Connection> getConnections() {
-		List<Connection> lc = new ArrayList<Connection>();
+		List<Connection> lc = new ArrayList<>();
 
 		for (NetworkInterface i : net) {
 			lc.addAll(i.getConnections());
@@ -262,7 +262,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	 * Find the network interface based on the index
 	 */
 	public NetworkInterface getInterface(int interfaceNo) {
-		NetworkInterface ni = null;
+		NetworkInterface ni;
 		try {
 			ni = net.get(interfaceNo-1);
 		} catch (IndexOutOfBoundsException ex) {
@@ -352,7 +352,7 @@ public class DTNHost implements Comparable<DTNHost> {
 			
 			// Destroy all connections
 			List<NetworkInterface> removeList =
-				new ArrayList<NetworkInterface>(conns.size());
+                    new ArrayList<>(conns.size());
 			for (Connection con : conns) {
 				removeList.add(con.getOtherInterface(i));
 			}
@@ -458,7 +458,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	}
 
 	/**
-	 * Requests for deliverable message from this host to be sent trough a
+	 * Requests for deliverable message from this host to be sent through a
 	 * connection.
 	 * @param con The connection to send the messages trough
 	 * @return True if this host started a transfer, false if not

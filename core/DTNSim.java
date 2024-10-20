@@ -111,7 +111,7 @@ public class DTNSim {
 				Settings.addSettings(confFiles[i]);
 			}
 		}
-		catch (SettingsError er) {
+		catch (SettingsError | MissingSettingsError er) {
 			try {
 				Integer.parseInt(confFiles[i]);
 			}

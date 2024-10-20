@@ -52,7 +52,8 @@ public class SimClock {
 	 * @return The sim time
 	 */
 	public static String getFormattedTime(int decimals) {
-		return String.format("%." + decimals + "f", clockTime);
+		String format = "%." + decimals + "f"; // Build the format string
+		return String.format(format, clockTime);
 	}
 	
 	/**

@@ -6,18 +6,8 @@ package ui;
 
 import java.util.Vector;
 
+import core.*;
 import report.Report;
-import core.ApplicationListener;
-import core.ConnectionListener;
-import core.MessageListener;
-import core.MovementListener;
-import core.Settings;
-import core.SettingsError;
-import core.SimClock;
-import core.SimError;
-import core.SimScenario;
-import core.UpdateListener;
-import core.World;
 
 /**
  * Abstract superclass for user interfaces; contains also some simulation
@@ -111,7 +101,7 @@ public abstract class DTNSimUI {
 			this.world = this.scen.getWorld();
 			world.warmupMovementModel(warmupTime);
 		}
-		catch (SettingsError se) {
+		catch (SettingsError | MissingSettingsError se) {
 			System.err.println("Can't start: error in configuration file(s)");
 			System.err.println(se.getMessage());
 			System.exit(-1);			

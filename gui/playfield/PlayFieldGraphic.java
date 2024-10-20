@@ -41,7 +41,7 @@ public abstract class PlayFieldGraphic {
 	/**
 	 * Scales the value according to current zoom level
 	 * @param value Value to scale
-	 * @return Scaled value bit-truncated (casted) to an integer
+	 * @return Scaled value bit-truncated (cast) to an integer
 	 */
 	public static int scale(double value) {
 		return (int)Math.round(scale * value);
@@ -50,7 +50,7 @@ public abstract class PlayFieldGraphic {
 	/**
 	 * Scales the value according to current zoom level
 	 * @param value Value to scale
-	 * @return Scaled value bit-truncated (casted) to an integer
+	 * @return Scaled value bit-truncated (cast) to an integer
 	 */
 	public static int scale(int value) {
 		return (int)Math.round(scale * value);

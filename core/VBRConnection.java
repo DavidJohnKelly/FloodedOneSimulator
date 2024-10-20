@@ -5,6 +5,7 @@
 package core;
 
 import routing.MessageRouter;
+import util.Tuple;
 
 /**
  * A connection between two DTN nodes.  The transmission speed
@@ -43,15 +44,10 @@ public class VBRConnection extends Connection {
 	 * {@link MessageRouter#receiveMessage(Message, DTNHost)}
 	 */
 	public int startTransfer(DTNHost from, Message m) {
-		assert this.msgOnFly == null : "Already transferring " + 
-			this.msgOnFly + " from " + this.msgFromNode + " to " + 
-			this.getOtherNode(this.msgFromNode) + ". Can't "+ 
-			"start transfer of " + m + " from " + from;
-		
-		this.msgFromNode = from;
-		Message newMessage = m.replicate();
-		int retVal = getOtherNode(from).receiveMessage(newMessage, from);
-		
+		Tuple<Integer, Message> initTransfer = initialiseTransfer(from, m);
+		int retVal = initTransfer.getKey();
+		Message newMessage = initTransfer.getValue();
+
 		if (retVal == MessageRouter.RCV_OK) {
 			this.msgOnFly = newMessage;
 			this.msgsize = m.getSize();

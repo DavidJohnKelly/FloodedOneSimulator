@@ -26,17 +26,17 @@ public class NodeGraphic extends PlayFieldGraphic {
 	private static boolean drawBuffer;
 	private static List<DTNHost> highlightedNodes;
 	
-	private static Color rangeColor = Color.GREEN;
-	private static Color conColor = Color.BLACK;
-	private static Color hostColor = Color.BLUE;
-	private static Color hostNameColor = Color.BLUE;
-	private static Color msgColor1 = Color.BLUE;
-	private static Color msgColor2 = Color.GREEN;
-	private static Color msgColor3 = Color.RED;
+	private static final Color rangeColor = Color.GREEN;
+	private static final Color conColor = Color.BLACK;
+	private static final Color hostColor = Color.BLUE;
+	private static final Color hostNameColor = Color.BLUE;
+	private static final Color msgColor1 = Color.BLUE;
+	private static final Color msgColor2 = Color.GREEN;
+	private static final Color msgColor3 = Color.RED;
 	
-	private static Color highlightedNodeColor = Color.MAGENTA;
+	private static final Color highlightedNodeColor = Color.MAGENTA;
 
-	private DTNHost node;
+	private final DTNHost node;
 
 	public NodeGraphic(DTNHost node) {	
 		this.node = node;
@@ -69,9 +69,8 @@ public class NodeGraphic extends PlayFieldGraphic {
 		Coord loc = node.getLocation();
 
 		if (drawCoverage && node.isRadioActive()) {
-			ArrayList<NetworkInterface> interfaces = 
-				new ArrayList<NetworkInterface>();
-			interfaces.addAll(node.getInterfaces());
+            ArrayList<NetworkInterface> interfaces =
+                    new ArrayList<>(node.getInterfaces());
 			for (NetworkInterface ni : interfaces) {
 				double range = ni.getTransmitRange();
 				Ellipse2D.Double coverage;
@@ -89,9 +88,8 @@ public class NodeGraphic extends PlayFieldGraphic {
 		if (drawConnections) {
 			g2.setColor(conColor);
 			Coord c1 = node.getLocation();
-			ArrayList<Connection> conList = new ArrayList<Connection>();
-			// create a copy to prevent concurrent modification exceptions
-			conList.addAll(node.getConnections());
+            // create a copy to prevent concurrent modification exceptions
+            ArrayList<Connection> conList = new ArrayList<>(node.getConnections());
 			for (Connection c : conList) {
 				DTNHost otherNode = c.getOtherNode(node);
 				Coord c2;

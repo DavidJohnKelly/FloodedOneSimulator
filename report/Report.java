@@ -109,7 +109,7 @@ public abstract class Report {
 		
 		if (settings.contains(OUTPUT_SETTING)) {
 			outFileName = settings.getSetting(OUTPUT_SETTING);
-			// fill value place holders in the name
+			// fill value placeholders in the name
 			outFileName = settings.valueFillString(outFileName);
 		}
 		else {

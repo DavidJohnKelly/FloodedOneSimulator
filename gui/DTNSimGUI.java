@@ -230,6 +230,14 @@ public class DTNSimGUI extends DTNSimUI {
     	infoPanel.showInfo(host);
     	showPath(host.getPath()); // show path on the play field
     }
+
+	/**
+	 * Sets the view focus to a specific coordinate on the map
+	 * @param location The coordinate to center on
+	 */
+	public void setFocus(Coord location) {
+		centerViewAt(location);
+	}
     
     /**
      * Shows a path on the play field

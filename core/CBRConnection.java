@@ -5,6 +5,7 @@
 package core;
 
 import routing.MessageRouter;
+import util.Tuple;
 
 /**
  * A constant bit-rate connection between two DTN nodes.
@@ -43,14 +44,9 @@ public class CBRConnection extends Connection {
 	 * {@link MessageRouter#receiveMessage(Message, DTNHost)}
 	 */
 	public int startTransfer(DTNHost from, Message m) {
-		assert this.msgOnFly == null : "Already transferring " + 
-			this.msgOnFly + " from " + this.msgFromNode + " to " + 
-			this.getOtherNode(this.msgFromNode) + ". Can't " + 
-			"start transfer of " + m + " from " + from;
-
-		this.msgFromNode = from;
-		Message newMessage = m.replicate();
-		int retVal = getOtherNode(from).receiveMessage(newMessage, from);
+		Tuple<Integer, Message> initTransfer = initialiseTransfer(from, m);
+		int retVal = initTransfer.getKey();
+		Message newMessage = initTransfer.getValue();
 
 		if (retVal == MessageRouter.RCV_OK) {
 			this.msgOnFly = newMessage;
@@ -73,7 +69,7 @@ public class CBRConnection extends Connection {
 	}
 
 	/**
-	 * Gets the transferdonetime
+	 * Gets the transfer done time
 	 */
 	public double getTransferDoneTime() {
 		return transferDoneTime;

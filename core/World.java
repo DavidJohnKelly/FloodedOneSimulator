@@ -4,6 +4,7 @@
  */
 package core;
 
+import custom.FloodEvent;
 import input.EventQueue;
 import input.ExternalEvent;
 import input.ScheduledUpdatesQueue;
@@ -57,6 +58,8 @@ public class World {
 	private final ScheduledUpdatesQueue scheduledUpdates;
 	private boolean simulateConOnce;
 
+	private final List<FloodEvent> floodEvents;
+
 	/**
 	 * Constructor.
 	 */
@@ -74,6 +77,33 @@ public class World {
 		this.simClock = SimClock.getInstance();
 		this.scheduledUpdates = new ScheduledUpdatesQueue();
 		this.isCancelled = false;
+
+		this.floodEvents = new ArrayList<>();
+
+		setNextEventQueue();
+		initSettings();
+	}
+
+	/**
+	 * Constructor to create a world with flooding events
+	 */
+	public World(List<FloodEvent> floodEvents, List<DTNHost> hosts, int sizeX, int sizeY,
+				 double updateInterval, List<UpdateListener> updateListeners,
+				 boolean simulateConnections, List<EventQueue> eventQueues)
+	{
+		this.hosts = hosts;
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
+		this.updateInterval = updateInterval;
+		this.updateListeners = updateListeners;
+		this.simulateConnections = simulateConnections;
+		this.eventQueues = eventQueues;
+
+		this.simClock = SimClock.getInstance();
+		this.scheduledUpdates = new ScheduledUpdatesQueue();
+		this.isCancelled = false;
+
+		this.floodEvents = floodEvents;
 
 		setNextEventQueue();
 		initSettings();
@@ -147,6 +177,7 @@ public class World {
 	 * Runs all external events that are due between the time when
 	 * this method is called and after one update interval.
 	 */
+	// TODO: Update flooding areas each update tick
 	public void update () {
 		double runUntil = SimClock.getTime() + this.updateInterval;
 
@@ -158,6 +189,7 @@ public class World {
 			ExternalEvent ee = this.nextEventQueue.nextEvent();
 			ee.processEvent(this);
 			updateHosts(); // update all hosts after every event
+			updateFloodEvents(); // update all flooding events
 			setNextEventQueue();
 		}
 
@@ -205,6 +237,17 @@ public class World {
 	}
 
 	/**
+	 * Update all flooding events
+	 *
+	 * @author David Kelly
+	 */
+	private void updateFloodEvents() {
+		for (FloodEvent floodEvent : this.floodEvents) {
+			floodEvent.update();
+		}
+	}
+
+	/**
 	 * Moves all hosts in the world for a given amount of time
 	 * @param timeIncrement The time how long all nodes should move
 	 */
@@ -228,6 +271,14 @@ public class World {
 	public List<DTNHost> getHosts() {
 		return this.hosts;
 	}
+
+	/**
+	 * Returns the flood events in a list
+	 * @return the flood events in a list
+	 *
+	 * @author David Kelly
+	 */
+	public List<FloodEvent> getFloodEvents() { return this.floodEvents; }
 
 	/**
 	 * Returns the x-size (width) of the world 

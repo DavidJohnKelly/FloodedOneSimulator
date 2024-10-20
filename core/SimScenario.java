@@ -4,11 +4,14 @@
  */
 package core;
 
+import custom.FloodEvent;
+import custom.FloodGraphic;
 import input.EventQueue;
 import input.EventQueueHandler;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import movement.MapBasedMovement;
@@ -71,6 +74,18 @@ public class SimScenario implements Serializable {
 	/** application name in the group -setting id ({@value})*/
 	public static final String GAPPNAME_S = "application";
 
+
+
+	/** *************************** CUSTOM SETTINGS HERE ********************************
+	 * namespace for flooding type settings ({@value}) */
+	public static final String FLOODTYPE_NS = "Flooding";
+	public static final String FLOOD_COUNT_S = "floodCount";
+	public static final String FLOOD_LOCATIONS_S = "floodLocations";
+	public static final String FLOOD_GROWTH_RATES_S = "floodGrowthRates";
+	public static final String FLOOD_MAX_AREAS_S = "floodMaxAreas";
+
+
+
 	/** package where to look for movement models */
 	private static final String MM_PACKAGE = "movement.";
 	/** package where to look for router classes */
@@ -107,6 +122,14 @@ public class SimScenario implements Serializable {
 	/** Map used for host movement (if any) */
 	private SimMap simMap;
 
+
+	/*
+	 * Custom Settings Variables
+	 * @author David Kelly
+	 */
+	private final List<FloodEvent> floodEvents;
+
+
 	/** Global connection event listeners */
 	private final List<ConnectionListener> connectionListeners;
 	/** Global message event listeners */
@@ -131,18 +154,6 @@ public class SimScenario implements Serializable {
 	 * Creates a scenario based on Settings object.
 	 */
 	protected SimScenario() {
-		Settings s = new Settings(SCENARIO_NS);
-		nrofGroups = s.getInt(NROF_GROUPS_S);
-
-		this.name = s.valueFillString(s.getSetting(NAME_S));
-		this.endTime = s.getDouble(END_TIME_S);
-		this.updateInterval = s.getDouble(UP_INT_S);
-		this.simulateConnections = s.getBoolean(SIM_CON_S);
-
-		s.ensurePositiveValue(nrofGroups, NROF_GROUPS_S);
-		s.ensurePositiveValue(endTime, END_TIME_S);
-		s.ensurePositiveValue(updateInterval, UP_INT_S);
-
 		this.simMap = null;
 		this.maxHostRange = 1;
 
@@ -153,6 +164,46 @@ public class SimScenario implements Serializable {
 		this.appListeners = new ArrayList<>();
 		this.eqHandler = new EventQueueHandler();
 
+		Settings s = new Settings(SCENARIO_NS);
+		this.nrofGroups = s.getInt(NROF_GROUPS_S);
+		this.name = s.valueFillString(s.getSetting(NAME_S));
+		this.endTime = s.getDouble(END_TIME_S);
+		this.updateInterval = s.getDouble(UP_INT_S);
+		this.simulateConnections = s.getBoolean(SIM_CON_S);
+
+		s.ensurePositiveValue(endTime, END_TIME_S);
+		s.ensurePositiveValue(nrofGroups, NROF_GROUPS_S);
+		s.ensurePositiveValue(updateInterval, UP_INT_S);
+
+		/*
+		  Custom Scenario Variables
+
+		  @author David Kelly
+		 */
+		int floodCount = 0;
+		Coord[] floodLocations;
+		double[] floodGrowthRates;
+		double[] floodMaxAreas;
+		floodEvents = new ArrayList<>();
+		try {
+			s.setNameSpace(FLOODTYPE_NS);
+			floodCount = s.getInt(FLOOD_COUNT_S);
+			System.out.println("Flood Count: " + floodCount);
+			floodLocations = s.getCsvCoords(FLOOD_LOCATIONS_S, floodCount);
+			floodGrowthRates = s.getCsvDoubles(FLOOD_GROWTH_RATES_S, floodCount);
+			floodMaxAreas = s.getCsvDoubles(FLOOD_MAX_AREAS_S, floodCount);
+
+			s.ensurePositiveValue(floodCount, FLOOD_COUNT_S);
+			s.ensurePositiveValues(floodGrowthRates, FLOOD_GROWTH_RATES_S);
+
+			createFloodEvents(floodCount, floodLocations, floodGrowthRates, floodMaxAreas); // @author David Kelly
+		}
+		catch (MissingSettingsError e) {
+			// Nothing to do here, just haven't defined any flooding events for the given scenario
+			// If there are any other setting errors, they will encounter an exception
+		}
+
+
 		/* TODO: check size from movement models */
 		s.setNameSpace(MovementModel.MOVEMENT_MODEL_NS);
 		int [] worldSize = s.getCsvInts(MovementModel.WORLD_SIZE, 2);
@@ -160,12 +211,21 @@ public class SimScenario implements Serializable {
 		this.worldSizeY = worldSize[1];
 		
 		createHosts();
-		
-		this.world = new World(hosts, worldSizeX, worldSizeY, updateInterval, 
-				updateListeners, simulateConnections, 
-				eqHandler.getEventQueues());
+
+		// Create a default world type if no flood events are defined
+		if (floodCount == 0) {
+			this.world = new World(hosts, worldSizeX, worldSizeY, updateInterval,
+					updateListeners, simulateConnections,
+					eqHandler.getEventQueues());
+		}
+		else { // If flood events are defined, then create a flooded world
+			this.world = new World(floodEvents, hosts, worldSizeX, worldSizeY, updateInterval,
+					updateListeners, simulateConnections,
+					eqHandler.getEventQueues());
+		}
+
 	}
-	
+
 	/**
 	 * Returns the SimScenario instance and creates one if it doesn't exist yet
 	 */
@@ -368,13 +428,13 @@ public class SimScenario implements Serializable {
 					// Set the proto application in proto router
 					//mRouterProto.setApplication(protoApp);
 					mRouterProto.addApplication(protoApp);
-				} catch (SettingsError se) {
+				} catch (SettingsError | MissingSettingsError se) {
 					// Failed to create an application for this group
 					System.err.println("Failed to setup an application: " + se);
 					System.err.println("Caught at " + se.getStackTrace()[0]);
 					System.exit(-1);
 				}
-			}
+            }
 
 			if (mmProto instanceof MapBasedMovement) {
 				this.simMap = ((MapBasedMovement)mmProto).getMap();
@@ -395,11 +455,37 @@ public class SimScenario implements Serializable {
 	}
 
 	/**
+	 * Create all flood events within the simulation
+	 *
+	 * @param floodCount The amount of flood events to create
+	 * @param floodLocations The coordinates of the centre of these events
+	 * @param floodGrowthRates The growth rates of the floods
+	 * @param floodMaxAreas The maximum areas of the floods
+	 *
+	 * @author David Kelly
+	 */
+	private void createFloodEvents(int floodCount, Coord[] floodLocations, double[] floodGrowthRates, double[] floodMaxAreas)
+	{
+		for (int i=0; i<floodCount; i++) {
+			floodEvents.add(new FloodEvent(floodLocations[i], floodGrowthRates[i], floodMaxAreas[i]));
+		}
+	}
+
+	/**
 	 * Returns the list of nodes for this scenario.
 	 * @return the list of nodes for this scenario.
 	 */
 	public List<DTNHost> getHosts() {
 		return this.hosts;
+	}
+
+	/**
+	 * Returns the list of flood events for this scenario.
+	 * @return the list of flood events for this scenario.
+	 * @author David Kelly
+	 */
+	public List<FloodEvent> getFloodEvents() {
+		return this.floodEvents;
 	}
 	
 	/**

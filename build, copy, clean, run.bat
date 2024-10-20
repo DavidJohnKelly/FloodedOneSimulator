@@ -13,7 +13,7 @@ rmdir "C:\Users\wwwku\OneDrive - The University of Nottingham\Year 4\Semester 1\
 echo Folder deleted successfully.
 
 rem Run the one.bat file
-call "C:\Users\wwwku\OneDrive - The University of Nottingham\Year 4\Semester 1\COMP4032 - Advanced Computer Networks\Coursework\The ONE\the-one-1.6.0\one.bat"
+call "C:\Users\wwwku\OneDrive - The University of Nottingham\Year 4\Semester 1\COMP4032 - Advanced Computer Networks\Coursework\The ONE\the-one-1.6.0\one.bat" flood_test_settings.txt
 
 echo one.bat has been executed.
 

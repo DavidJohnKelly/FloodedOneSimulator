@@ -8,10 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -29,7 +26,7 @@ import core.Settings;
  * Node chooser panel
  */
 public class NodeChooser extends JPanel implements ActionListener {
-	private DTNSimGUI gui;
+	private final DTNSimGUI gui;
 	/** the maximum number of allNodes to show in the list per page */
 	public static final int MAX_NODE_COUNT = 500;
 	private Timer refreshTimer;
@@ -41,10 +38,10 @@ public class NodeChooser extends JPanel implements ActionListener {
 	public static final String NODE_MESSAGE_FILTERS_S = "nodeMessageFilters";
 	
 	private static final String HOST_KEY = "host";
-	private List<DTNHost> allNodes;
+	private final List<DTNHost> allNodes;
 	private List<DTNHost> shownNodes;
 
-	private JComboBox groupChooser;
+	private JComboBox<String> groupChooser;
 	private JPanel nodesPanel;
 	private JPanel chooserPanel;
 	private Vector<NodeFilter> filters;
@@ -53,10 +50,10 @@ public class NodeChooser extends JPanel implements ActionListener {
 	public NodeChooser(List<DTNHost> nodes,	DTNSimGUI gui) {
 		Settings s = new Settings(MainWindow.GUI_NS);
 		// create a replicate to not interfere with original's ordering
-		this.allNodes = new ArrayList<DTNHost>(nodes);
+		this.allNodes = new ArrayList<>(nodes);
 		this.shownNodes = allNodes;
 		this.gui = gui;
-		this.filters = new Vector<NodeFilter>();
+		this.filters = new Vector<>();
 		
 		if (s.contains(NODE_MESSAGE_FILTERS_S)) {
 			String[] filterIds = s.getCsvSetting(NODE_MESSAGE_FILTERS_S);
@@ -89,7 +86,7 @@ public class NodeChooser extends JPanel implements ActionListener {
 	 * Clears all node filters
 	 */
 	public void clearFilters() {
-		this.filters = new Vector<NodeFilter>();
+		this.filters = new Vector<>();
 		this.shownNodes = allNodes;
 		if (this.refreshTimer != null) {
 			this.refreshTimer.stop();
@@ -110,7 +107,7 @@ public class NodeChooser extends JPanel implements ActionListener {
 	
 	private void updateShownNodes() {
 		List<DTNHost> oldShownNodes = shownNodes;
-		List<DTNHost>nodes = new Vector<DTNHost>();
+		List<DTNHost>nodes = new Vector<>();
 		
 		for (DTNHost node : allNodes) {	
 			for (NodeFilter f : this.filters) {
@@ -120,16 +117,14 @@ public class NodeChooser extends JPanel implements ActionListener {
 				}
 			}
 		}
-		
-		if (nodes.size() == oldShownNodes.size() &&
-			oldShownNodes.containsAll(nodes)) {
-			return; /* nothing to update */
-		} else {
+
+		if (!(nodes.size() == oldShownNodes.size() &&
+			new HashSet<>(oldShownNodes).containsAll(nodes))) {
 			this.shownNodes = nodes;
 			updateList();
 			NodeGraphic.setHighlightedNodes(nodes);
 		}
-		
+
 	}
 	
 	/**
@@ -160,7 +155,7 @@ public class NodeChooser extends JPanel implements ActionListener {
 				groupNames[i] = (last + "..." + next);
 				last = next + 1;
 			}
-			groupChooser = new JComboBox(groupNames);
+			groupChooser = new JComboBox<>(groupNames);
 			groupChooser.addActionListener(this);
 			chooserPanel.add(groupChooser);
 		}

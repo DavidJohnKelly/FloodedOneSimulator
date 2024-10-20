@@ -4,6 +4,7 @@
  */
 package gui;
 
+import core.MissingSettingsError;
 import gui.nodefilter.NodeMessageFilter;
 import gui.playfield.PlayField;
 import gui.playfield.NodeGraphic;
@@ -237,7 +238,7 @@ public class SimMenuBar extends JMenuBar implements ActionListener {
 	        	enableBgImage.setSelected(false);
 	        	return;
 	        }
-	        catch (SettingsError er) {
+	        catch (SettingsError | MissingSettingsError er) {
 	        	warn("Problem with the underlay image settings: " + 
 	        			er.getMessage());
 	        	return;

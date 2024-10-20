@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,13 +23,13 @@ import core.Message;
  * Information panel that shows data of selected messages and nodes.
  */
 public class InfoPanel extends JPanel implements ActionListener{
-	private JComboBox msgChooser;
+	private JComboBox<String> msgChooser;
 	private JLabel info;
 	private JButton infoButton;
 	private JButton routingInfoButton;
 	private Message selectedMessage;
 	private DTNHost selectedHost;
-	private DTNSimGUI gui;
+	private final DTNSimGUI gui;
 	
 	public InfoPanel(DTNSimGUI gui) {
 		this.gui = gui;
@@ -48,15 +49,19 @@ public class InfoPanel extends JPanel implements ActionListener{
 	 * @param host Host to show the information of
 	 */
 	public void showInfo(DTNHost host) {
-		Vector<Message> messages = 
-			new Vector<Message>(host.getMessageCollection());
+		Vector<Message> messages =
+                new Vector<>(host.getMessageCollection());
 		Collections.sort(messages);
 		reset();
 		this.selectedHost = host;
 		String text = (host.isMovementActive() ? "" : "INACTIVE ") + host + 
 			" at " + host.getLocation();
-		
-		msgChooser = new JComboBox(messages);
+
+		Vector<String> messages_str = messages.stream()
+				.map(Message::toString)
+				.collect(Collectors.toCollection(Vector::new));
+
+		msgChooser = new JComboBox<>(messages_str);
 		msgChooser.insertItemAt(messages.size() + " messages", 0);
 		msgChooser.setSelectedIndex(0);
 		msgChooser.addActionListener(this);
@@ -116,7 +121,9 @@ public class InfoPanel extends JPanel implements ActionListener{
 				return; 
 			}
 			Message m = (Message)msgChooser.getSelectedItem();
-			setMessageInfo(m);
+			if (m != null) {
+				setMessageInfo(m);
+			}
 		}
 		else if (e.getSource() == this.infoButton) {
 			Path p = new Path();

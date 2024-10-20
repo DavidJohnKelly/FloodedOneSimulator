@@ -1,9 +1,14 @@
 /* 
  * Copyright 2010 Aalto University, ComNet
- * Released under GPLv3. See LICENSE.txt for details. 
+ * Released under GPLv3. See LICENSE.txt for details.
+ *
+ *
  */
 package gui.playfield;
 
+import com.sun.scenario.effect.Flood;
+import custom.FloodEvent;
+import custom.FloodGraphic;
 import gui.DTNSimGUI;
 
 import java.awt.Color;
@@ -67,8 +72,8 @@ public class PlayField extends JPanel {
         this.underlayImage = null;
         this.imageTransform = null;
         this.autoClearOverlay = true;
-        
-        this.addMouseListener(new MouseAdapter() {        	
+
+		this.addMouseMotionListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (focusOnClick) {
@@ -76,6 +81,7 @@ public class PlayField extends JPanel {
 				}
 			}
 		});
+
 	}
 	
 	/**
@@ -111,7 +117,6 @@ public class PlayField extends JPanel {
 		curTransform.scale(PlayFieldGraphic.getScale(),
 				PlayFieldGraphic.getScale());
 		curTransform.translate(this.underlayImgDx, this.underlayImgDy);
-        
 	}
 	
 	/**
@@ -198,8 +203,12 @@ public class PlayField extends JPanel {
             overlayGraphic.draw(g2);
         }
 
-		FloodGraphic floodGraphic = new FloodGraphic();
-		floodGraphic.draw(g2);
+		// draw flood graphics
+		// ONE decouples logic from drawing here
+		for (FloodEvent fe : w.getFloodEvents())
+		{
+			new FloodGraphic(fe).draw(g2);
+		}
 
 		// draw reference scale
 		this.refGraphic.draw(g2);

@@ -8,18 +8,16 @@ import gui.playfield.PlayField;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 
 import core.Settings;
 import core.World;
 
 /**
- * Main window for the program. Takes care of layouting the main components
+ * Main window for the program. Takes care of the layout the main components
  * in the window.
  */
 public class MainWindow extends JFrame {
@@ -45,12 +43,12 @@ public class MainWindow extends JFrame {
 	/** log panel's initial weight in the split panel */
 	private static final double SPLIT_PANE_LOG_WEIGHT = 0.2;
 	
-	private JScrollPane playFieldScroll;
+	private final JScrollPane playFieldScroll;
 	
-    public MainWindow(String scenName, World world, PlayField field,
+    public MainWindow(String sceneName, World world, PlayField field,
     		GUIControls guiControls, InfoPanel infoPanel,
     		EventLogPanel elp, DTNSimGUI gui) {    	
-    	super(WINDOW_TITLE + " - " + scenName);
+    	super(WINDOW_TITLE + " - " + sceneName);
     	JFrame.setDefaultLookAndFeelDecorated(true);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -69,10 +67,11 @@ public class MainWindow extends JFrame {
         playFieldScroll = new JScrollPane(field);
         playFieldScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 
         		Integer.MAX_VALUE));
-        
+
         hostListScroll = new JScrollPane(chooser);
         hostListScroll.setHorizontalScrollBarPolicy(
         		JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
 
         logControlSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
         		new JScrollPane(elp.getControls()),new JScrollPane(elp));

@@ -71,7 +71,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	private int oldSpeedIndex; // what speed was selected before FFW
 	
 	private JButton screenShotButton;
-	private JComboBox guiUpdateChooser;
+	private JComboBox<String> guiUpdateChooser;
 	
 	/** 
 	 * GUI update speeds. Negative values -> how many 1/10 seconds to wait
@@ -93,8 +93,8 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	private double guiUpdateInterval;
 	private javax.swing.JSpinner zoomSelector;
 
-	private PlayField pf;
-	private DTNSimGUI gui;
+	private final PlayField pf;
+	private final DTNSimGUI gui;
 	
 	private long lastUpdate;
 	private double lastSimTime;
@@ -136,7 +136,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 		this.sepsField.setToolTipText(TEXT_SEPS);
 		
 		this.screenShotButton = new JButton(TEXT_SCREEN_SHOT);
-		this.guiUpdateChooser = new JComboBox(UP_SPEEDS);
+		this.guiUpdateChooser = new JComboBox<>(UP_SPEEDS);
 		
 		this.zoomSelector = new JSpinner(new SpinnerNumberModel(1.0, ZOOM_MIN, 
 				ZOOM_MAX, 0.001));
@@ -170,7 +170,13 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	
 	private ImageIcon createImageIcon(String path) {
 		java.net.URL imgURL = getClass().getResource(PATH_GRAPHICS+path);
-		return new ImageIcon(imgURL);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL);
+		}
+		else
+		{
+			return null;
+		}
 	}
 	
 	
@@ -263,7 +269,7 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	}
 	
 	/**
-	 * Is fast forward turned on
+	 * Is fast-forward turned on
 	 * @return True if FFW is on, false if not
 	 */
 	public boolean isFfw() {
@@ -287,8 +293,8 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 		SpinnerNumberModel model = 
 			(SpinnerNumberModel)this.zoomSelector.getModel();
 		double curZoom = model.getNumber().doubleValue();
-		Number newValue = new Double(curZoom + model.getStepSize().
-				doubleValue() * delta * curZoom * 100); 
+		Number newValue = curZoom + model.getStepSize().
+                doubleValue() * delta * curZoom * 100;
 		
 		if (newValue.doubleValue() < ZOOM_MIN) {
 			newValue = ZOOM_MIN;
@@ -348,7 +354,9 @@ public class GUIControls extends JPanel implements ActionListener, ChangeListene
 	
 	private void updateUpdateInterval() {
 		String selString = (String)this.guiUpdateChooser.getSelectedItem();
-		this.guiUpdateInterval = Double.parseDouble(selString); 		
+		if (selString != null) {
+			this.guiUpdateInterval = Double.parseDouble(selString);
+		}
 	}
 	
 	/**

@@ -138,6 +138,20 @@ public class Settings {
 					") not accepted for setting " + settingName);
 		}
 	}
+
+	/**
+	 * Makes sure that the given settings values are all positive
+	 * @param values Value list to check
+	 * @param settingName Name of the setting (for error message)
+	 * @throws SettingsError if the value was not positive
+	 *
+	 * @author David Kelly
+	 */
+	public void ensurePositiveValues(double[] values, String settingName) {
+		for (double value : values) {
+			ensurePositiveValue(value, settingName);
+		}
+	}
 	
 	/**
 	 * Sets the namespace to something else than the current namespace.
@@ -179,7 +193,7 @@ public class Settings {
 			return getFullPropertyName(setting, false);
 		}
 		
-		// not found from primary, but Settings contains -> must be from 2ndary
+		// not found from primary, but Settings contains -> must be from secondary
 		else return getFullPropertyName(setting, true);
 	}
 	
@@ -326,7 +340,7 @@ public class Settings {
 			
 			else return !value.trim().isEmpty();
 		}
-		catch (SettingsError e) {
+		catch (MissingSettingsError e) {
 			return false; // didn't find the setting
 		}
 	}
@@ -382,7 +396,7 @@ public class Settings {
 		}
 		
 		if (value == null || value.isEmpty()) {
-			throw new SettingsError("Can't find setting " + 
+			throw new MissingSettingsError("Can't find setting " +
 					getPropertyNamesString(name));
 		}
 		
@@ -409,7 +423,7 @@ public class Settings {
 	/**
 	 * Parses run-specific settings from a String value
 	 * @param value The String to parse
-	 * @return The runIndex % arrayLength'th value of the run array
+	 * @return The runIndex % arrayLength value of the run array
 	 */
 	private static String parseRunSetting(String value) {
 		final String RUN_ARRAY_START = "[";
@@ -417,10 +431,9 @@ public class Settings {
 		final String RUN_ARRAY_DELIM = ";";
 		final int MIN_LENGTH = 3; // minimum run is one value. e.g. "[v]"
 		
-		if (!value.startsWith(RUN_ARRAY_START) || 
-			!value.endsWith(RUN_ARRAY_END) || 
-			runIndex < 0 ||
-			value.length() < MIN_LENGTH) {
+		if (!value.startsWith(RUN_ARRAY_START) || !value.endsWith(RUN_ARRAY_END)
+				|| runIndex < 0 || value.length() < MIN_LENGTH) {
+
 			return value; // standard format setting -> return
 		}
 		
@@ -626,6 +639,37 @@ public class Settings {
 		}
 		
 		return ranges;
+	}
+
+	/**
+	 * Gets a coordinate value within the settings file. Values should be written like (x1,y1),(x2,y2) etc.
+	 * Throws an error if the amount of coordinates does not match the expected count, or if the coordinates
+	 * aren't numerical.
+	 *
+	 * @param name The name of the value to retrieve
+	 * @param expectedCount The expected amount of coordinates
+	 * @return The list of coordinates found
+	 *
+	 * @author David Kelly
+	 */
+	public Coord[] getCsvCoords(String name, int expectedCount) {
+		// Get the initial string representations of the coordinates
+		// Send double the expected count as each , in the coordinate will also count towards total
+		String[] strCoords = getCsvSetting(name, expectedCount * 2);
+		Coord[] coords = new Coord[expectedCount];
+		for (int i = 0; i < strCoords.length; i += 2) {
+			// Access both coordinate values
+			String x_s = strCoords[i];
+			String y_s = strCoords[i + 1];
+
+			// Parse the String representations of the coordinates, stripping any non-numerical characters
+			// Keeps the . character to allow for floating point coordinates, and the - character for negative numbers
+			double x = Double.parseDouble(x_s.replaceAll("[^0-9.-]", ""));
+			double y = Double.parseDouble(y_s.replaceAll("[^0-9.-]", ""));
+			Coord coord = new Coord(x, y);
+			coords[i/2] = coord;
+		}
+		return coords;
 	}
 	
 	/**

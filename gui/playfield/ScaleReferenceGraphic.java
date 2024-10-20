@@ -10,7 +10,7 @@ import java.awt.Graphics2D;
 
 /**
  * Reference scale bar graphic. This is the small reference scale
- * on the upper left corner of the playfield.
+ * in the upper left corner of the playfield.
  */
 public class ScaleReferenceGraphic extends PlayFieldGraphic {
 	/** minimum length of the reference bar (pixels) */
