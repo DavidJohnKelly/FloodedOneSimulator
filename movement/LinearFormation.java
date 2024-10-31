@@ -6,8 +6,6 @@ package movement;
 
 import core.Coord;
 import core.Settings;
-import movement.MovementModel;
-import movement.Path;
 
 /**
  * A stationary "movement" model where nodes do not move but are in linear
@@ -24,9 +22,9 @@ public class LinearFormation extends MovementModel {
 	public static final String END_LOCATION_S = "endLocation";
 
 	/* values for the prototype */
-	private Coord startLoc; /** The start location of the line */
+	private final Coord startLoc; /** The start location of the line */
 	private Coord endLoc; /** The start location of the line */	
-	private int nodeCount; /** how many nodes in this formation */
+	private final int nodeCount; /** how many nodes in this formation */
 	private int lastIndex; /** index of the previous node */
 
 	/* values for the per-node models */
@@ -38,7 +36,7 @@ public class LinearFormation extends MovementModel {
 	 */
 	public LinearFormation(Settings s) {
 		super(s);
-		int coords[];
+		int[] coords;
 		
 		coords = s.getCsvInts(LINEAR_FORMATION_NS + START_LOCATION_S, 2);
 		this.startLoc = new Coord(coords[0], coords[1]);
@@ -56,6 +54,8 @@ public class LinearFormation extends MovementModel {
 	public LinearFormation(LinearFormation lf) {
 		super(lf);
 		this.loc = calculateInitLocation(lf);
+		this.nodeCount = lf.nodeCount;
+		this.startLoc = lf.startLoc;
 	}
 	
 	/**
@@ -99,7 +99,8 @@ public class LinearFormation extends MovementModel {
 		p.addWaypoint(loc);
 		return p;
 	}
-	
+
+
 	/**
 	 * Returns Double.MAX_VALUE (no paths available)
 	 */

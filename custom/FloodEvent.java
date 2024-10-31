@@ -15,6 +15,8 @@ public class FloodEvent {
     private final double maxArea;
     private double currentRadius;
 
+    public static final double VIEWABLE_RANGE_EXTENDER = 1.2;
+
     /**
      * Default constructor that defines the location, growth rate and maximum area of the flood
      *
@@ -72,7 +74,7 @@ public class FloodEvent {
         }
         double nodeDistance = getDistanceFromCentre(node.getLocation());
 
-        return nodeDistance <= 1.2 * this.currentRadius;
+        return nodeDistance <= VIEWABLE_RANGE_EXTENDER * this.currentRadius;
     }
 
     public Coord getLocation() { return this.location; }

@@ -18,11 +18,11 @@ public class SimMap implements Serializable {
 	private Coord minBound;
 	private Coord maxBound;
 	/** list representation of the map for efficient list-returning */
-	private ArrayList<MapNode> nodes;
+	private final ArrayList<MapNode> nodes;
 	/** hash map presentation of the map for efficient finding node by coord */
-	private Map<Coord, MapNode> nodesMap;
+	private final Map<Coord, MapNode> nodesMap;
 	/** offset of map translations */
-	private Coord offset;
+	private final Coord offset;
 	/** is this map data mirrored after reading */
 	private boolean isMirrored;
 	
@@ -44,6 +44,17 @@ public class SimMap implements Serializable {
 	public List<MapNode> getNodes() {
 		return this.nodes;
 	}
+
+	/**
+	 * Rehashes the node map
+	 */
+	private void rehash()
+	{
+			nodesMap.clear();
+			for (MapNode node : getNodes()) {
+				nodesMap.put(node.getLocation(), node); // re-hash
+			}
+	}
 	
 	/**
 	 * Returns a MapNode at given coordinates or null if there's no MapNode
@@ -53,13 +64,41 @@ public class SimMap implements Serializable {
 	 */
 	public MapNode getNodeByCoord(Coord c) {
 		if (needsRehash) { // some coordinates have changed after creating hash
-			nodesMap.clear();
-			for (MapNode node : getNodes()) {
-				nodesMap.put(node.getLocation(), node); // re-hash
-			}
+			this.rehash();
 		}
 	
 		return nodesMap.get(c);
+	}
+
+	/**
+	 * Returns the MapNode closest to the given coordinate
+	 * @param c The coordinate
+	 * @return The map node closest to it, or null if no nodes found
+	 *
+	 * @author David Kelly
+	 */
+	public MapNode getNearestNodeByCoord(Coord c) {
+		assert c != null : "Error coordinate must not be null";
+
+		if (needsRehash) { // if some coordinates have changed after creating hash
+			this.rehash();
+		}
+
+		double minDistance = Double.MAX_VALUE;
+		MapNode nearestNode = null;
+
+		for (MapNode node : getNodes()) {
+				double nodeLocationX = node.getLocation().getX();
+				double nodeLocationY = node.getLocation().getY();
+				double distanceX = nodeLocationX - c.getX();
+				double distanceY = nodeLocationY - c.getY();
+				double distance = distanceX * distanceX + distanceY * distanceY;
+				if (distance < minDistance) {
+					minDistance = distance;
+					nearestNode = node;
+				}
+		}
+		return nearestNode;
 	}
 	
 	/**

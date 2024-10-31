@@ -18,8 +18,7 @@ import core.Settings;
  *
  * @author teemuk
  */
-public class RandomDirection
-extends MovementModel {
+public class RandomDirection extends MovementModel {
 
     private Coord lastWaypoint;
 

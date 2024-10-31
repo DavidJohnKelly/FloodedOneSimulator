@@ -110,7 +110,7 @@ public class ExternalMovement extends MovementModel {
 		pathQueue = new LinkedList<Tuple<Double, Path>>();
 		latestPath = null;
 		
-		if (initLocations.size() > 0) { // we have location data left
+		if (!initLocations.isEmpty()) { // we have location data left
 			// gets a new location from the list
 			Tuple<String, Coord> initLoc = initLocations.remove(0); 
 			this.intialLocation = this.latestLocation = initLoc.getValue();
@@ -193,7 +193,7 @@ public class ExternalMovement extends MovementModel {
 	 */
 	@Override
 	public double nextPathAvailable() {
-		if (pathQueue.size() == 0) {
+		if (pathQueue.isEmpty()) {
 			return latestPathStartTime;
 		}
 		else {
@@ -211,7 +211,7 @@ public class ExternalMovement extends MovementModel {
 			return null;
 		}		
 		
-		if (pathQueue.size() == 0) { // nothing in the queue, return latest
+		if (pathQueue.isEmpty()) { // nothing in the queue, return latest
 			p = latestPath;
 			latestPath = null;
 		}
@@ -221,7 +221,7 @@ public class ExternalMovement extends MovementModel {
 		
 		return p;
 	}
-	
+
 	@Override
 	public int getMaxX() {
 		return (int)(reader.getMaxX() - reader.getMinX()) + 1;
@@ -259,7 +259,7 @@ public class ExternalMovement extends MovementModel {
 			}
 		}
 		
-		if (list.size() > 0) {
+		if (!list.isEmpty()) {
 			return time;
 		}
 		else {

@@ -202,7 +202,7 @@ public abstract class MovementModel {
 	 * @return A new path or null
 	 */
 	public abstract Path getPath();
-	
+
 	/**
 	 * Returns a new initial placement for a node
 	 * @return The initial coordinates for a node
@@ -284,5 +284,5 @@ public abstract class MovementModel {
 			rng = new Random(0);
 		}
 	}
-	
+
 }

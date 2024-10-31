@@ -12,16 +12,16 @@ import movement.map.PointsOfInterest;
 import core.Settings;
 
 /**
- * Map based movement model that uses Dijkstra's algorithm to find shortest
+ * Map based movement model that uses Dijkstra's algorithm to find the shortest
  * paths between two random map nodes and Points Of Interest
  */
 public class ShortestPathMapBasedMovement extends MapBasedMovement implements 
 	SwitchableMovement {
 	/** the Dijkstra shortest path finder */
-	private DijkstraPathFinder pathFinder;
+	protected final DijkstraPathFinder pathFinder;
 
 	/** Points Of Interest handler */
-	private PointsOfInterest pois;
+	protected PointsOfInterest pois;
 	
 	/**
 	 * Creates a new movement model based on a Settings object's settings.
@@ -49,11 +49,11 @@ public class ShortestPathMapBasedMovement extends MapBasedMovement implements
 	public Path getPath() {
 		Path p = new Path(generateSpeed());
 		MapNode to = pois.selectDestination();
-		
+
 		List<MapNode> nodePath = pathFinder.getShortestPath(lastMapNode, to);
 		
 		// this assertion should never fire if the map is checked in read phase
-		assert nodePath.size() > 0 : "No path from " + lastMapNode + " to " +
+		assert !nodePath.isEmpty() : "No path from " + lastMapNode + " to " +
 			to + ". The simulation map isn't fully connected";
 				
 		for (MapNode node : nodePath) { // create a Path from the shortest path

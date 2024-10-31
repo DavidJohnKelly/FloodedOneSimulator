@@ -15,8 +15,8 @@ import core.Settings;
 public class RandomWalk extends MovementModel implements SwitchableMovement {
 
 	private Coord lastWaypoint;
-	private double minDistance;
-	private double maxDistance;
+	private final double minDistance;
+	private final double maxDistance;
 	
 	public RandomWalk(Settings settings) {
 		super(settings);
@@ -53,7 +53,7 @@ public class RandomWalk extends MovementModel implements SwitchableMovement {
 		double maxX = getMaxX();
 		double maxY = getMaxY();
 		
-		Coord c = null;
+		Coord c;
 		while (true) {
 			
 			double angle = rng.nextDouble() * 2 * Math.PI;
@@ -75,7 +75,7 @@ public class RandomWalk extends MovementModel implements SwitchableMovement {
 		this.lastWaypoint = c;
 		return p;
 	}
-	
+
 	@Override
 	public RandomWalk replicate() {
 		return new RandomWalk(this);

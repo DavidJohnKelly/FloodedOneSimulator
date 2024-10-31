@@ -6,8 +6,6 @@ package movement;
 
 import core.Coord;
 import core.Settings;
-import movement.MovementModel;
-import movement.Path;
 
 /**
  * Movement model where all nodes move on a line
@@ -56,7 +54,7 @@ public class LinearMovement extends MovementModel {
 	 */
 	public LinearMovement(Settings s) {
 		super(s);
-		int coords[];
+		int[] coords;
 		
 		coords = s.getCsvInts(LINEAR_MOVEMENT_NS + START_LOCATION_S, 2);
 		this.startLoc = new Coord(coords[0], coords[1]);
@@ -71,7 +69,7 @@ public class LinearMovement extends MovementModel {
 	
 	/**
 	 * Copy constructor. 
-	 * @param lf The LinearFormation prototype
+	 * @param ilm The LinearFormation prototype
 	 */
 	public LinearMovement(LinearMovement ilm) {
 		super(ilm);
@@ -95,8 +93,8 @@ public class LinearMovement extends MovementModel {
 	 * @return a location on the line
 	 */
 	private Coord calculateLocation(LinearMovement proto, boolean isEven) {
-		double dx = 0;
-		double dy = 0;
+		double dx;
+		double dy;
 		double placementFraction;
 		
 		double xDiff = (proto.endLoc.getX() -  proto.startLoc.getX());
@@ -128,8 +126,8 @@ public class LinearMovement extends MovementModel {
 	}
 	
 	/**
-	 * Returns the the location of the node in the formation
-	 * @return the the location of the node in the formation
+	 * Returns the location of the node in the formation
+	 * @return the location of the node in the formation
 	 */
 	@Override
 	public Coord getInitialLocation() {		
@@ -146,7 +144,7 @@ public class LinearMovement extends MovementModel {
 		this.nextPath = null;
 		return p;
 	}
-	
+
 	/**
 	 * Returns Double.MAX_VALUE (no paths available)
 	 */
@@ -161,14 +159,12 @@ public class LinearMovement extends MovementModel {
 	
 	@Override
 	public int getMaxX() {		
-		return (int)(endLoc.getX() > startLoc.getX() ? endLoc.getX() : 
-			startLoc.getX());
+		return (int)(Math.max(endLoc.getX(), startLoc.getX()));
 	}
 
 	@Override
 	public int getMaxY() {		
-		return (int)(endLoc.getY() > startLoc.getY() ? endLoc.getY() : 
-			startLoc.getY());
+		return (int)(Math.max(endLoc.getY(), startLoc.getY()));
 	}
 
 	

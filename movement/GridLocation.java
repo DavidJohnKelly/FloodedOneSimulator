@@ -26,7 +26,7 @@ public class GridLocation extends MovementModel {
 	 * -setting ({@value}). Two values: x,y */
 	public static final String LOCATION_S = "location";
 	
-	private double startCoords[];
+	private double[] startCoords;
 	private int rows;
 	private int cols;
 	private double spacing;
@@ -66,7 +66,7 @@ public class GridLocation extends MovementModel {
 		x += rng.nextDouble() * proto.offset;
 		
 		y = proto.startCoords[1] + 
-			((proto.nodeCount) / proto.cols) * proto.spacing;
+			((double) (proto.nodeCount) / proto.cols) * proto.spacing;
 		y += rng.nextDouble() * proto.offset;
 		
 		this.loc = new Coord(x,y);
@@ -93,7 +93,7 @@ public class GridLocation extends MovementModel {
 		p.addWaypoint(loc);
 		return p;
 	}
-	
+
 	@Override
 	public double nextPathAvailable() {
 		return Double.MAX_VALUE;	// no new paths available

@@ -52,7 +52,7 @@ public class RandomWaypoint extends MovementModel {
 		this.lastWaypoint = c;
 		return p;
 	}
-	
+
 	@Override
 	public RandomWaypoint replicate() {
 		return new RandomWaypoint(this);

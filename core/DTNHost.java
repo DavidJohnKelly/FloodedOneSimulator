@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import movement.MovementModel;
-import movement.Path;
+import custom.FloodEvent;
+import movement.TargetedShortestPathMapBasedMovement;
+import movement.*;
+import movement.map.MapNode;
 import routing.MessageRouter;
 import routing.util.RoutingInfo;
 
@@ -33,6 +35,8 @@ public class DTNHost implements Comparable<DTNHost> {
 	private final List<MovementListener> movListeners;
 	private final List<NetworkInterface> net;
 	private final ModuleCommunicationBus comBus;
+
+	private boolean stuckInFlood;
 
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
@@ -81,6 +85,8 @@ public class DTNHost implements Comparable<DTNHost> {
 
 		this.nextTimeToMove = movement.nextPathAvailable();
 		this.path = null;
+
+		this.stuckInFlood = false;
 
 		if (movLs != null) { // inform movement listeners about the location
 			for (MovementListener l : movLs) {
@@ -366,6 +372,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	 * Moves the node towards the next waypoint or waits if it is
 	 * not time to move yet
 	 * @param timeIncrement How long time the node moves
+	 *
 	 */
 	public void move(double timeIncrement) {		
 		double possibleMovement;
@@ -375,10 +382,8 @@ public class DTNHost implements Comparable<DTNHost> {
 		if (!isMovementActive() || SimClock.getTime() < this.nextTimeToMove) {
 			return; 
 		}
-		if (this.destination == null) {
-			if (!setNextWaypoint()) {
-				return;
-			}
+		if (this.destination == null && !setNextWaypoint()) {
+			return;
 		}
 
 		possibleMovement = timeIncrement * speed;
@@ -400,14 +405,65 @@ public class DTNHost implements Comparable<DTNHost> {
 		dy = (possibleMovement/distance) * (this.destination.getY() -
 				this.location.getY());
 		this.location.translate(dx, dy);
-	}	
+	}
+
+	/**
+	 * Move the node, but keep in mind the current flooding events
+	 * Handle the cases where the node is in the flood, and the cases where it can view the flood
+	 *
+	 * @param timeIncrement How long the node moves
+	 * @param floodEvents The list of current flooding events
+	 *
+	 * @author David Kelly
+	 */
+	public void move(double timeIncrement, List<FloodEvent> floodEvents) {
+		final double ACCELERATION_RATE = 0.01;
+		if (stuckInFlood) // Only process movement if node hasn't already been caught by flood completely
+		{
+			return;
+		}
+		double initialSpeed = this.speed;
+		this.move(timeIncrement);
+		for (FloodEvent floodEvent : floodEvents) {
+			if (floodEvent.nodeInFlood(this)){
+				if(initialSpeed < this.speed) // Avoid route changes affecting the speed whist in the flood
+				{
+					this.speed = initialSpeed;
+				}
+				// Slow down speed for however long the node is in the flood for
+				// Allows chance that in small floods for instance, node may be able to make it through
+				this.speed -= ACCELERATION_RATE;
+				if (this.speed < 0.0) {
+					this.speed = 0.0; // If speed drops to 0 then node is stuck
+					stuckInFlood = true;
+					// stop node communicating
+					this.net.forEach(NetworkInterface::disableConnectivity);
+					this.tearDownAllConnections();
+				}
+			}
+			if (floodEvent.nodeCanViewFlood(this)){
+				if (!stuckInFlood && speed != 0)
+				{
+					Coord targetCoord = new Coord(3000, 3000);
+
+					if (this.movement instanceof TargetedShortestPathMapBasedMovement) {
+						((TargetedShortestPathMapBasedMovement) this.movement).setTargetCoord(targetCoord);
+						if (this.path != null) { this.path.clear(); }
+					} else if (this.movement instanceof MapRouteMovement) {
+						this.speed = 0;
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Sets the next destination and speed to correspond the next waypoint
 	 * on the path.
 	 * @return True if there was a next waypoint to set, false if node still
 	 * should wait
-	 */
+	 *
+	 * */
 	private boolean setNextWaypoint() {
 		if (path == null) {
 			path = movement.getPath();

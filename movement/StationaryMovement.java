@@ -14,15 +14,15 @@ import core.Settings;
 public class StationaryMovement extends MovementModel {
 	/** Per node group setting for setting the location ({@value}) */
 	public static final String LOCATION_S = "nodeLocation";
-	private Coord loc; /** The location of the nodes */
-	
-	/**
+	private final Coord loc;
+
+    /**
 	 * Creates a new movement model based on a Settings object's settings.
 	 * @param s The Settings object where the settings are read from
 	 */
 	public StationaryMovement(Settings s) {
 		super(s);
-		int coords[];
+		int[] coords;
 		
 		coords = s.getCsvInts(LOCATION_S, 2);
 		this.loc = new Coord(coords[0],coords[1]);
@@ -56,7 +56,7 @@ public class StationaryMovement extends MovementModel {
 		p.addWaypoint(loc);
 		return p;
 	}
-	
+
 	@Override
 	public double nextPathAvailable() {
 		return Double.MAX_VALUE;	// no new paths available

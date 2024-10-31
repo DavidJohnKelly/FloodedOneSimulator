@@ -27,8 +27,8 @@ public class ExternalPathMovement extends MovementModel {
 	public static final String ACTIVITY_FILE_S = "activeFile";
 	
 	// Settings
-	private String traceFile;
-	private String activeFile;
+	private final String traceFile;
+	private final String activeFile;
 	
 	// Node's paths
 	private List<List<ExternalPathMovementReader.Entry>> paths;
@@ -137,19 +137,17 @@ public class ExternalPathMovement extends MovementModel {
 	@Override
 	public Coord getInitialLocation() {
 		// Return the first point of the first path
-		if (this.paths.size() > 0 &&
-				this.paths.get(0).size() > 0) {
+		if (!this.paths.isEmpty() &&
+                !this.paths.get(0).isEmpty()) {
 			ExternalPathMovementReader.Entry e = this.paths.get(0).get(0);
-			Coord c = new Coord(e.x, e.y);
-			return c;
+            return new Coord(e.x, e.y);
 		}
 		return new Coord(0.0, 0.0);
 	}
 
 	@Override
 	public MovementModel replicate() {
-		ExternalPathMovement mm = new ExternalPathMovement(this);
-		return mm;
+        return new ExternalPathMovement(this);
 	}
 	
 	@Override

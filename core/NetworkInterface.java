@@ -116,6 +116,10 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		this.transmitSpeed = ni.transmitSpeed;
 		this.scanInterval = ni.scanInterval;
 		this.ah = ni.ah;
+		this.address=ni.address;
+		this.oldTransmitRange = ni.oldTransmitRange;
+		this.optimizer = ni.optimizer;
+		this.activenessJitterMax = ni.activenessJitterMax;
 		
 		if (ni.activenessJitterMax > 0) {
 			this.activenessJitterValue = rng.nextInt(ni.activenessJitterMax);
@@ -255,6 +259,12 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 		}		
 		return active;
 	}
+
+	public void disableConnectivity()
+	{
+		this.transmitRange = 0;
+		this.scanInterval = Double.MAX_VALUE;
+	}
 	
 	/**
 	 * Checks if this interface is currently in the scanning mode
@@ -298,7 +308,6 @@ abstract public class NetworkInterface implements ModuleCommunicationListener {
 
 	/**
 	 * Connects the interface to another interface.
-	 * 
 	 * Overload this in a derived class.  Check the requirements for
 	 * the connection to work in the derived class, then call 
 	 * connect(Connection, NetworkInterface) for the actual connection.

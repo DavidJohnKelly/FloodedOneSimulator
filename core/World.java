@@ -176,6 +176,8 @@ public class World {
 	 * Update (move, connect, disconnect etc.) all hosts in the world.
 	 * Runs all external events that are due between the time when
 	 * this method is called and after one update interval.
+	 *
+	 * @author David Kelly
 	 */
 	// TODO: Update flooding areas each update tick
 	public void update () {
@@ -194,6 +196,7 @@ public class World {
 		}
 
 		moveHosts(this.updateInterval);
+
 		simClock.setTime(runUntil);
 
 		updateHosts();
@@ -250,11 +253,19 @@ public class World {
 	/**
 	 * Moves all hosts in the world for a given amount of time
 	 * @param timeIncrement The time how long all nodes should move
+	 *
+	 * @author David Kelly
 	 */
 	private void moveHosts(double timeIncrement) {
-        for (DTNHost host : hosts) {
-            host.move(timeIncrement);
-        }
+		if(this.floodEvents.isEmpty()) {
+			for (DTNHost host : this.hosts) {
+				host.move(timeIncrement);
+			}
+		} else {
+			for (DTNHost host : this.hosts) {
+				host.move(timeIncrement, floodEvents);
+			}
+		}
 	}
 
 	/**

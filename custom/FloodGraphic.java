@@ -6,6 +6,7 @@ package custom;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.Ellipse2D;
 
 import core.Coord;
 import gui.playfield.PlayFieldGraphic;
@@ -18,7 +19,8 @@ import gui.playfield.PlayFieldGraphic;
  */
 public class FloodGraphic extends PlayFieldGraphic {
     private final Color FLOOD_COLOUR = Color.RED;
-    private final Color BG_COLOR = Color.BLUE;
+    private final Color BG_COLOR = new Color(255, 0, 0, 100);
+    private final Color RANGE_COLOR = new Color(0, 255, 0, 50);
     private final Coord location;
     private final double radius;
 
@@ -30,13 +32,29 @@ public class FloodGraphic extends PlayFieldGraphic {
     @Override
     public void draw(Graphics2D g2) {
 
+        g2.setColor(RANGE_COLOR);
+        Ellipse2D viewableRangeGraphic = new Ellipse2D.Double(
+                scale(this.location.getX() - FloodEvent.VIEWABLE_RANGE_EXTENDER * radius),
+                scale(this.location.getY() - FloodEvent.VIEWABLE_RANGE_EXTENDER * radius),
+                scale(FloodEvent.VIEWABLE_RANGE_EXTENDER * radius * 2),
+                scale(FloodEvent.VIEWABLE_RANGE_EXTENDER * radius * 2)
+        );
+        g2.fill(viewableRangeGraphic);
+
+
+        // Create the flood graphic by drawing solid outline and filling with transparent colour
         g2.setColor(FLOOD_COLOUR);
-        g2.setBackground(BG_COLOR);
+        Ellipse2D floodGraphic = new Ellipse2D.Double(
+                scale(this.location.getX() - radius),
+                scale(this.location.getY() - radius),
+                scale(radius * 2),
+                scale(radius * 2)
+        );
+        // Draw the outline of the flood
+        g2.draw(floodGraphic);
+        // Fill the background of the flood with transparency
+        g2.setColor(BG_COLOR);
+        g2.fill(floodGraphic);
 
-        // Calculate centre coordinates as otherwise will be drawn as if location is top left not center
-        int centre_x = scale(this.location.getX()) - scale(this.radius) / 2;
-        int centre_y = scale(this.location.getY()) - scale(this.radius) / 2;
-
-        g2.fillOval(centre_x, centre_y, scale(this.radius), scale(this.radius));
     }
 }

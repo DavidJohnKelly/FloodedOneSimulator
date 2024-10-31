@@ -8,14 +8,8 @@ import input.WKTMapReader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import movement.map.MapNode;
 import movement.map.SimMap;
@@ -26,7 +20,7 @@ import core.SimError;
 
 /**
  * Map based movement model which gives out Paths that use the
- * roads of a SimMap. 
+ * roads of a SimMap.
  */
 public class MapBasedMovement extends MovementModel implements SwitchableMovement {
 	/** sim map for the model */
@@ -45,7 +39,8 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 	public static final String NROF_FILES_S = "nrofMapFiles";
 	/** map file -setting id ({@value})*/
 	public static final String FILE_S = "mapFile";
-	
+
+
 	/** 
 	 * Per node group setting for selecting map node types that are OK for
 	 * this node group to traverse trough. Value must be a comma separated list
@@ -187,7 +182,7 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 		Coord nextCoord;
 		
 		assert lastMapNode != null: "Tried to get a path before placement";
-		
+
 		// start paths from current node 
 		p.addWaypoint(curNode.getLocation());
 		
@@ -196,7 +191,7 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 
 		for (int i=0; i<pathLength; i++) {
 			neighbors = curNode.getNeighbors();
-			Vector<MapNode> n2 = new Vector<MapNode>(neighbors);
+			Vector<MapNode> n2 = new Vector<>(neighbors);
 			if (!this.backAllowed) {
 				n2.remove(prevNode); // to prevent going back
 			}	
@@ -212,7 +207,7 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 				}
 			}
 			
-			if (n2.size() == 0) { // only option is to go back
+			if (n2.isEmpty()) { // only option is to go back
 				nextNode = prevNode;
 			}
 			else { // choose a random node from remaining neighbors
@@ -231,7 +226,7 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 
 		return p;
 	}
-	
+
 	/**
 	 * Selects and returns a random node that is OK from a list of nodes.
 	 * Whether node is OK, is determined by the okMapNodeTypes list.
@@ -316,18 +311,17 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 	 */
 	private void checkMapConnectedness(List<MapNode> nodes) {
 		Set<MapNode> visited = new HashSet<MapNode>();
-		Queue<MapNode> unvisited = new LinkedList<MapNode>();
-		MapNode firstNode;
-		MapNode next = null;
+        MapNode firstNode;
+		MapNode next;
 		
-		if (nodes.size() == 0) {
+		if (nodes.isEmpty()) {
 			throw new SimError("No map nodes in the given map");
 		}
 		
 		firstNode = nodes.get(0);
 		
 		visited.add(firstNode);
-		unvisited.addAll(firstNode.getNeighbors());
+        Queue<MapNode> unvisited = new LinkedList<>(firstNode.getNeighbors());
 		
 		while ((next = unvisited.poll()) != null) {
 			visited.add(next);
@@ -413,15 +407,13 @@ public class MapBasedMovement extends MovementModel implements SwitchableMovemen
 		// TODO: This should be optimized
 		MapNode nearest = null;
 		double minDistance = Double.MAX_VALUE;
-		Iterator<MapNode> iterator = getMap().getNodes().iterator();
-		while (iterator.hasNext()) {
-			MapNode temp = iterator.next();
-			double distance = temp.getLocation().distance(lastWaypoint);
-			if (distance < minDistance) {
-				minDistance = distance;
-				nearest = temp;
-			}
-		}
+        for (MapNode temp : getMap().getNodes()) {
+            double distance = temp.getLocation().distance(lastWaypoint);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearest = temp;
+            }
+        }
 		lastMapNode = nearest;
 	}
 
