@@ -37,6 +37,7 @@ public class DTNHost implements Comparable<DTNHost> {
 	private final ModuleCommunicationBus comBus;
 
 	private boolean stuckInFlood;
+	private boolean hasSeenFlood;
 
 	static {
 		DTNSim.registerForReset(DTNHost.class.getCanonicalName());
@@ -87,6 +88,7 @@ public class DTNHost implements Comparable<DTNHost> {
 		this.path = null;
 
 		this.stuckInFlood = false;
+		this.hasSeenFlood = false;
 
 		if (movLs != null) { // inform movement listeners about the location
 			for (MovementListener l : movLs) {
@@ -338,13 +340,17 @@ public class DTNHost implements Comparable<DTNHost> {
 			tearDownAllConnections();
 			return;
 		}
-		
-		if (simulateConnections) {
-			for (NetworkInterface i : net) {
-				i.update();
+
+		if (hasSeenFlood) // Only process connections when has seen flood
+			// Simulates the packets only being sent when has seen flood
+		{
+			if (simulateConnections) {
+				for (NetworkInterface i : net) {
+					i.update();
+				}
 			}
+			this.router.update();
 		}
-		this.router.update();
 	}
 	
 	/** 
@@ -416,14 +422,13 @@ public class DTNHost implements Comparable<DTNHost> {
 	 *
 	 * @author David Kelly
 	 */
-	public void move(double timeIncrement, List<FloodEvent> floodEvents) {
+	public void move(double timeIncrement, Coord safeZone, List<FloodEvent> floodEvents) {
 		final double ACCELERATION_RATE = 0.01;
 		if (stuckInFlood) // Only process movement if node hasn't already been caught by flood completely
 		{
 			return;
 		}
 		double initialSpeed = this.speed;
-		this.move(timeIncrement);
 		for (FloodEvent floodEvent : floodEvents) {
 			if (floodEvent.nodeInFlood(this)){
 				if(initialSpeed < this.speed) // Avoid route changes affecting the speed whist in the flood
@@ -441,20 +446,22 @@ public class DTNHost implements Comparable<DTNHost> {
 					this.tearDownAllConnections();
 				}
 			}
-			if (floodEvent.nodeCanViewFlood(this)){
+			// If it can directly see flood, or has received message of flood
+			if (floodEvent.nodeCanViewFlood(this) || this.hasSeenFlood){
+				this.hasSeenFlood = true;
 				if (!stuckInFlood && speed != 0)
 				{
-					Coord targetCoord = new Coord(3000, 3000);
-
+					// Navigate to the safe coordinate
 					if (this.movement instanceof TargetedShortestPathMapBasedMovement) {
-						((TargetedShortestPathMapBasedMovement) this.movement).setTargetCoord(targetCoord);
-						if (this.path != null) { this.path.clear(); }
+						((TargetedShortestPathMapBasedMovement) this.movement).setTargetCoord(safeZone);
+						this.path = null; // Clear the old path so the new path can take effect
 					} else if (this.movement instanceof MapRouteMovement) {
 						this.speed = 0;
 					}
 				}
 			}
 		}
+		this.move(timeIncrement);
 	}
 
 	/**
@@ -507,7 +514,8 @@ public class DTNHost implements Comparable<DTNHost> {
 		int retVal = this.router.receiveMessage(m, from); 
 
 		if (retVal == MessageRouter.RCV_OK) {
-			m.addNodeOnPath(this);	// add this node on the messages path
+			m.addNodeOnPath(this); // add this node on the messages path
+			this.hasSeenFlood = true; // And simulate that the node now knows about the floods
 		}
 
 		return retVal;	

@@ -52,8 +52,7 @@ public class DijkstraPathFinder {
 		assert (okMapNodes == null || node.isType(okMapNodes));
 		
 		// create needed data structures
-		this.unvisited = new PriorityQueue<MapNode>(PQ_INIT_SIZE, 
-				new DistanceComparator());
+		this.unvisited = new PriorityQueue<MapNode>(PQ_INIT_SIZE, new DistanceComparator());
 		this.visited = new HashSet<MapNode>();
 		this.prevNodes = new HashMap<MapNode, MapNode>();
 		this.distances = new DistanceMap();
@@ -64,10 +63,10 @@ public class DijkstraPathFinder {
 	}
 	
 	/**
-	 * Finds and returns a shortest path between two map nodes
+	 * Finds and returns the shortest path between two map nodes
 	 * @param from The source of the path
 	 * @param to The destination of the path
-	 * @return a shortest path between the source and destination nodes in
+	 * @return The shortest path between the source and destination nodes in
 	 * a list of MapNodes or an empty list if such path is not available
 	 */
 	public List<MapNode> getShortestPath(MapNode from, MapNode to) {

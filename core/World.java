@@ -59,6 +59,7 @@ public class World {
 	private boolean simulateConOnce;
 
 	private final List<FloodEvent> floodEvents;
+	private final Coord floodSafeZone;
 
 	/**
 	 * Constructor.
@@ -79,6 +80,7 @@ public class World {
 		this.isCancelled = false;
 
 		this.floodEvents = new ArrayList<>();
+		this.floodSafeZone = new Coord(0,0);
 
 		setNextEventQueue();
 		initSettings();
@@ -87,7 +89,7 @@ public class World {
 	/**
 	 * Constructor to create a world with flooding events
 	 */
-	public World(List<FloodEvent> floodEvents, List<DTNHost> hosts, int sizeX, int sizeY,
+	public World(Coord floodSafeZone, List<FloodEvent> floodEvents, List<DTNHost> hosts, int sizeX, int sizeY,
 				 double updateInterval, List<UpdateListener> updateListeners,
 				 boolean simulateConnections, List<EventQueue> eventQueues)
 	{
@@ -104,9 +106,12 @@ public class World {
 		this.isCancelled = false;
 
 		this.floodEvents = floodEvents;
+		this.floodSafeZone = floodSafeZone;
 
 		setNextEventQueue();
 		initSettings();
+
+
 	}
 
 	/**
@@ -263,7 +268,7 @@ public class World {
 			}
 		} else {
 			for (DTNHost host : this.hosts) {
-				host.move(timeIncrement, floodEvents);
+				host.move(timeIncrement, this.floodSafeZone, this.floodEvents);
 			}
 		}
 	}
@@ -323,6 +328,15 @@ public class World {
 			"Node " + node + " in index " + address;
 
 		return node; 
+	}
+
+	/** Get the safe zone for the given scenario
+	 *
+	 * @author David Kelly
+	 */
+	public Coord getFloodSafeZone()
+	{
+		return this.floodSafeZone;
 	}
 
 	/**

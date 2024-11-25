@@ -6,6 +6,7 @@ package movement;
 
 import java.util.List;
 
+import core.Coord;
 import movement.map.DijkstraPathFinder;
 import movement.map.MapNode;
 import movement.map.PointsOfInterest;
@@ -44,21 +45,30 @@ public class ShortestPathMapBasedMovement extends MapBasedMovement implements
 		this.pathFinder = mbm.pathFinder;
 		this.pois = mbm.pois;
 	}
-	
-	@Override
-	public Path getPath() {
+
+	// Get the shortest path to a specific node
+	protected Path getPathTo(MapNode to)
+	{
 		Path p = new Path(generateSpeed());
-		MapNode to = pois.selectDestination();
 
 		List<MapNode> nodePath = pathFinder.getShortestPath(lastMapNode, to);
-		
+
 		// this assertion should never fire if the map is checked in read phase
 		assert !nodePath.isEmpty() : "No path from " + lastMapNode + " to " +
-			to + ". The simulation map isn't fully connected";
-				
+				to + ". The simulation map isn't fully connected";
+
 		for (MapNode node : nodePath) { // create a Path from the shortest path
 			p.addWaypoint(node.getLocation());
 		}
+
+		return p;
+	}
+	
+	@Override
+	public Path getPath() {
+		MapNode to = pois.selectDestination();
+
+		Path p = getPathTo(to);
 		
 		lastMapNode = to;
 		

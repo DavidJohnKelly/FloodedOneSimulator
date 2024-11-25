@@ -16,10 +16,10 @@ import core.Settings;
  *
  * @author David Kelly
  */
-public class TargetedShortestPathMapBasedMovement extends ShortestPathMapBasedMovement implements
-        SwitchableMovement {
+public class TargetedShortestPathMapBasedMovement extends
+        ShortestPathMapBasedMovement implements SwitchableMovement {
 
-    /** Points Of Interest handler */
+    /** Target Coord handler */
     private Coord targetCoord;
 
     /**
@@ -46,24 +46,10 @@ public class TargetedShortestPathMapBasedMovement extends ShortestPathMapBasedMo
         if(targetCoord == null) {
             return super.getPath();
         }
-
         else {
-            System.out.println("Routing to: " + targetCoord);
-            Path p = new Path(generateSpeed());
             MapNode to = getMap().getNearestNodeByCoord(targetCoord);
-            System.out.println("Routing to: " + to);
 
-            assert to != null: "Error target node is null";
-
-            List<MapNode> nodePath = this.pathFinder.getShortestPath(lastMapNode, to);
-
-            // this assertion should never fire if the map is checked in read phase
-            assert !nodePath.isEmpty() : "No path from " + lastMapNode + " to " +
-                    to + ". The simulation map isn't fully connected";
-
-            for (MapNode node : nodePath) { // create a Path from the shortest path
-                p.addWaypoint(node.getLocation());
-            }
+            Path p = super.getPathTo(to);
 
             lastMapNode = to;
 

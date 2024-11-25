@@ -78,16 +78,16 @@ public class SimMap implements Serializable {
 	 * @author David Kelly
 	 */
 	public MapNode getNearestNodeByCoord(Coord c) {
-		assert c != null : "Error coordinate must not be null";
+		assert c != null : "Error! Coordinate must not be null";
 
 		if (needsRehash) { // if some coordinates have changed after creating hash
 			this.rehash();
 		}
 
 		double minDistance = Double.MAX_VALUE;
-		MapNode nearestNode = null;
+		Coord nearestCoord = null;
 
-		for (MapNode node : getNodes()) {
+		for (MapNode node : nodes) {
 				double nodeLocationX = node.getLocation().getX();
 				double nodeLocationY = node.getLocation().getY();
 				double distanceX = nodeLocationX - c.getX();
@@ -95,10 +95,11 @@ public class SimMap implements Serializable {
 				double distance = distanceX * distanceX + distanceY * distanceY;
 				if (distance < minDistance) {
 					minDistance = distance;
-					nearestNode = node;
+					nearestCoord = node.getLocation();
 				}
 		}
-		return nearestNode;
+        assert nearestCoord != null;
+        return nodesMap.get(nearestCoord);
 	}
 	
 	/**

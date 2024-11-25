@@ -83,6 +83,7 @@ public class SimScenario implements Serializable {
 	public static final String FLOOD_LOCATIONS_S = "floodLocations";
 	public static final String FLOOD_GROWTH_RATES_S = "floodGrowthRates";
 	public static final String FLOOD_MAX_AREAS_S = "floodMaxAreas";
+	public static final String FLOOD_SAFE_ZONE = "floodSafeZone";
 
 
 
@@ -184,6 +185,7 @@ public class SimScenario implements Serializable {
 		Coord[] floodLocations;
 		double[] floodGrowthRates;
 		double[] floodMaxAreas;
+		Coord floodSafeZone = new Coord(0, 0); // Default of 0,0 for error handling
 		floodEvents = new ArrayList<>();
 		try {
 			s.setNameSpace(FLOODTYPE_NS);
@@ -192,6 +194,7 @@ public class SimScenario implements Serializable {
 			floodLocations = s.getCsvCoords(FLOOD_LOCATIONS_S, floodCount);
 			floodGrowthRates = s.getCsvDoubles(FLOOD_GROWTH_RATES_S, floodCount);
 			floodMaxAreas = s.getCsvDoubles(FLOOD_MAX_AREAS_S, floodCount);
+			floodSafeZone = s.getCsvCoords(FLOOD_SAFE_ZONE, 1)[0];
 
 			s.ensurePositiveValue(floodCount, FLOOD_COUNT_S);
 			s.ensurePositiveValues(floodGrowthRates, FLOOD_GROWTH_RATES_S);
@@ -219,7 +222,7 @@ public class SimScenario implements Serializable {
 					eqHandler.getEventQueues());
 		}
 		else { // If flood events are defined, then create a flooded world
-			this.world = new World(floodEvents, hosts, worldSizeX, worldSizeY, updateInterval,
+			this.world = new World(floodSafeZone, floodEvents, hosts, worldSizeX, worldSizeY, updateInterval,
 					updateListeners, simulateConnections,
 					eqHandler.getEventQueues());
 		}

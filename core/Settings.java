@@ -642,7 +642,7 @@ public class Settings {
 	}
 
 	/**
-	 * Gets a coordinate value within the settings file. Values should be written like (x1,y1),(x2,y2) etc.
+	 * Gets a list of coordinate values within the settings file. Values should be written like (x1,y1),(x2,y2) etc.
 	 * Throws an error if the amount of coordinates does not match the expected count, or if the coordinates
 	 * aren't numerical.
 	 *

@@ -162,11 +162,7 @@ public abstract class Report {
 			if (!createDirs(directory.getParentFile())) {
 				return false;
 			}
-			if (!directory.mkdir()) {
-				return false;
-			} else {
-				return true;
-			}
+            return directory.mkdir();
 		}
 	}
 	

@@ -13,13 +13,14 @@ Scenario.endTime = 10000000
 Scenario.endTime = 43200
 
 ## Custom Flooding Scenario Settings
-Flooding.floodCount = 1
+Flooding.floodCount = 2
 #Flooding.floodLocations = (100.50,100),(500,500),(2000,3000), (1400, 1400)
 #Flooding.floodGrowthRates = 1,2,4,4
 #Flooding.floodMaxAreas = 100000,-1,-1,2000000
-Flooding.floodLocations = (1400,1400)
-Flooding.floodGrowthRates = 4
-Flooding.floodMaxAreas = 2000000
+Flooding.floodLocations = (1400,1000),(1000,3000)
+Flooding.floodGrowthRates = 4,2
+Flooding.floodMaxAreas = 2000000,-1
+Flooding.floodSafeZone = (3000,2000)
 
 ## Interface-specific settings:
 # type : which interface class the interface belongs to

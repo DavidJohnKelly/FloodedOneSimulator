@@ -8,6 +8,8 @@ import core.DTNHost;
  * location (x, y), radius growth rate (m/tick), maximum area (m^2).
  * Flood events will update per clock tick, and nodes are unable to enter their area
  * Flood events are represented by a red oval on the GUI map
+ *
+ * @author David Kelly
  */
 public class FloodEvent {
     private final Coord location;
