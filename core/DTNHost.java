@@ -438,7 +438,7 @@ public class DTNHost implements Comparable<DTNHost> {
 				// Slow down speed for however long the node is in the flood for
 				// Allows chance that in small floods for instance, node may be able to make it through
 				this.speed -= ACCELERATION_RATE;
-				if (this.speed < 0.0) {
+				if (this.speed <= 0.0) {
 					this.speed = 0.0; // If speed drops to 0 then node is stuck
 					stuckInFlood = true;
 					// stop node communicating
@@ -595,6 +595,21 @@ public class DTNHost implements Comparable<DTNHost> {
 	 */
 	public int compareTo(DTNHost h) {
 		return this.getAddress() - h.getAddress();
+	}
+
+	public boolean isStuckInFlood()
+	{
+		return this.stuckInFlood;
+	}
+
+	public boolean hasSeenFlood()
+	{
+		return this.hasSeenFlood;
+	}
+
+	public double getSpeed()
+	{
+		return this.speed;
 	}
 
 }

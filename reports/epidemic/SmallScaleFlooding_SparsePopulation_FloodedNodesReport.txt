@@ -1,0 +1,6 @@
+Flooding stats for scenario SmallScaleFlooding_SparsePopulation
+flooded nodes: 67
+saved nodes: 16
+safe nodes: 157
+percent saved: 6.666667
+percent safe: 65.416664

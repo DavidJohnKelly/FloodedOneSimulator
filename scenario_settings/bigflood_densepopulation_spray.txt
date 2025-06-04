@@ -85,7 +85,7 @@ Group.msgTtl = 300
 Group1.groupID = p
 # 2-10 km/h (maybe people running)
 Group1.speed = 0.5, 2.8
-Group1.nrofHosts = 300
+Group1.nrofHosts = 200
 Group1.nrofInterfaces = 1
 Group1.interface1 = lowPowerInterface
 
@@ -95,7 +95,7 @@ Group2.groupID = c
 Group2.okMaps = 1
 # 10-50 km/h (in city so no motorway)
 Group2.speed = 2.8, 13.9
-Group2.nrofHosts = 300
+Group2.nrofHosts = 200
 Group2.nrofInterfaces = 2
 Group2.interface1 = mediumPowerInterface
 Group2.interface2 = lowPowerInterface
@@ -112,7 +112,7 @@ Group3.routeType = 1
 Group3.waitTime = 10, 30
 # 10-40 km/h (buses generally slower than cars)
 Group3.speed = 2.8, 11.1
-Group3.nrofHosts = 64
+Group3.nrofHosts = 32
 Group3.nrofInterfaces = 3
 Group3.interface1 = highPowerInterface
 Group3.interface2 = mediumPowerInterface
@@ -126,7 +126,7 @@ Group4.routeFile = data/tram3.wkt
 Group4.routeType = 1
 Group4.waitTime = 10, 30
 Group4.speed = 7, 10
-Group4.nrofHosts = 64
+Group4.nrofHosts = 32
 Group4.nrofInterfaces = 3
 Group4.interface1 = highPowerInterface
 Group4.interface2 = mediumPowerInterface

@@ -66,7 +66,7 @@ public abstract class Report {
 	private double outputInterval;
 	private double lastReportTime;
 	private String outFileName;
-	private String scenarioName;
+	private final String scenarioName;
 	
 	/**
 	 * Constructor.
@@ -302,7 +302,7 @@ public abstract class Report {
 	 * @return true if the given ID is in the warm up ID set
 	 */
 	protected boolean isWarmupID(String id) {
-		if (this.warmupIDs == null || this.warmupIDs.size() == 0) {
+		if (this.warmupIDs == null || this.warmupIDs.isEmpty()) {
 			return false;
 		}
 		
@@ -339,7 +339,7 @@ public abstract class Report {
 	 */
 	public String getAverage(List<Double> values) {
 		double sum = 0;
-		if (values.size() == 0) {
+		if (values.isEmpty()) {
 			return NAN;
 		}
 
@@ -371,7 +371,7 @@ public abstract class Report {
 	 * empty lists.
 	 */
 	public String getMedian(List<Double> values) {
-		if (values.size() == 0) {
+		if (values.isEmpty()) {
 			return NAN;
 		}
 		
@@ -386,7 +386,7 @@ public abstract class Report {
 	 * empty lists.
 	 */
 	public int getIntMedian(List<Integer> values) {
-		if (values.size() == 0) {
+		if (values.isEmpty()) {
 			return 0;
 		}
 		
@@ -402,7 +402,7 @@ public abstract class Report {
 	 * empty.
 	 */
 	public String getVariance(List<Double> values) {
-		if (values.size()==0) return "NaN";
+		if (values.isEmpty()) return "NaN";
 		double E_X;
 		double sum=0, sum2=0;
 		for (double dValue : values) {

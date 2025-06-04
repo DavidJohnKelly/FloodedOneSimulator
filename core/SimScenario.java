@@ -190,7 +190,6 @@ public class SimScenario implements Serializable {
 		try {
 			s.setNameSpace(FLOODTYPE_NS);
 			floodCount = s.getInt(FLOOD_COUNT_S);
-			System.out.println("Flood Count: " + floodCount);
 			floodLocations = s.getCsvCoords(FLOOD_LOCATIONS_S, floodCount);
 			floodGrowthRates = s.getCsvDoubles(FLOOD_GROWTH_RATES_S, floodCount);
 			floodMaxAreas = s.getCsvDoubles(FLOOD_MAX_AREAS_S, floodCount);

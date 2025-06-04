@@ -245,14 +245,19 @@ public class World {
 	}
 
 	/**
-	 * Update all flooding events
+	 * Update all flooding events following internal time
+	 * to ensure appropriate flooding speed
 	 *
 	 * @author David Kelly
 	 */
+	private double lastSimTime = 0.0;
 	private void updateFloodEvents() {
+		double currentSimTime = SimClock.getTime();
+		double simulatedSeconds = (currentSimTime - lastSimTime)/1000.0;
 		for (FloodEvent floodEvent : this.floodEvents) {
-			floodEvent.update();
+			floodEvent.update(simulatedSeconds);
 		}
+		lastSimTime = currentSimTime;
 	}
 
 	/**

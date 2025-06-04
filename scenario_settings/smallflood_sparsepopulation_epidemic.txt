@@ -1,24 +1,24 @@
 ####################### REMEMBER! Bluetooth cannot talk to wifi etc ###########################
 
 ## Scenario settings
-Scenario.name = LargeScaleFlooding_DensePopulation
+Scenario.name = SmallScaleFlooding_SparsePopulation
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 43200s == 12h
-Scenario.endTime = 3600
+Scenario.endTime = 10800
 
 ## Custom Flooding Scenario Settings
-Flooding.floodCount = 5
-Flooding.floodLocations = (1000,1000),(3000,2700),(1400,2000),(0,500),(3000,1400)
-Flooding.floodGrowthRates = 140, 160, 180, 200, 220
-Flooding.floodMaxAreas = -1, -1, -1, -1, -1
-Flooding.floodSafeZone = (1300,100)
+Flooding.floodCount = 1
+Flooding.floodLocations = (1000,1000)
+Flooding.floodGrowthRates = 60
+Flooding.floodMaxAreas = 150000
+Flooding.floodSafeZone = (3000,2000)
 
 ## Interface-specific settings:
 # type : which interface class the interface belongs to
 # For different types, the sub-parameters are interface-specific
 # For SimpleBroadcastInterface, the parameters are:
-# transmitSpeed : transmit speed of the interface (bytes per second)
+# transmitSpeed : transmit speed of the interface (bytes per second) 
 # transmitRange : range of the interface (meters)
 
 # All higher powered interfaces can also use lower powered mode
@@ -50,7 +50,7 @@ highPowerLongRangeInterface.transmitRange = 100
 
 # Define 4 host groups for pedestrians, cars, buses and trams
 # Then define individual groups for infrastructure nodes
-Scenario.nrofHostGroups = 8
+Scenario.nrofHostGroups = 6
 
 ## Group-specific settings:
 # groupID : Group's identifier. Used as the prefix of host names
@@ -66,7 +66,7 @@ Scenario.nrofHostGroups = 8
 ## Group and movement model specific settings
 # pois: Points Of Interest indexes and probabilities (poiIndex1, poiProb1, poiIndex2, poiProb2, ... )
 #       for ShortestPathMapBasedMovement
-# okMaps : which map nodes are OK for the group (map file indexes), default=all
+# okMaps : which map nodes are OK for the group (map file indexes), default=all 
 #          for all MapBasedMovent models
 # routeFile: route's file path - for MapRouteMovement
 # routeType: route's type - for MapRouteMovement
@@ -74,7 +74,7 @@ Scenario.nrofHostGroups = 8
 
 # Common settings for all groups
 Group.movementModel = TargetedShortestPathMapBasedMovement
-Group.router = SprayAndWaitRouter
+Group.router = EpidemicRouter
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 # Message TTL of 300 minutes (5 hours)
@@ -85,7 +85,7 @@ Group.msgTtl = 300
 Group1.groupID = p
 # 2-10 km/h (maybe people running)
 Group1.speed = 0.5, 2.8
-Group1.nrofHosts = 300
+Group1.nrofHosts = 100
 Group1.nrofInterfaces = 1
 Group1.interface1 = lowPowerInterface
 
@@ -95,7 +95,7 @@ Group2.groupID = c
 Group2.okMaps = 1
 # 10-50 km/h (in city so no motorway)
 Group2.speed = 2.8, 13.9
-Group2.nrofHosts = 300
+Group2.nrofHosts = 100
 Group2.nrofInterfaces = 2
 Group2.interface1 = mediumPowerInterface
 Group2.interface2 = lowPowerInterface
@@ -112,7 +112,7 @@ Group3.routeType = 1
 Group3.waitTime = 10, 30
 # 10-40 km/h (buses generally slower than cars)
 Group3.speed = 2.8, 11.1
-Group3.nrofHosts = 64
+Group3.nrofHosts = 16
 Group3.nrofInterfaces = 3
 Group3.interface1 = highPowerInterface
 Group3.interface2 = mediumPowerInterface
@@ -126,7 +126,7 @@ Group4.routeFile = data/tram3.wkt
 Group4.routeType = 1
 Group4.waitTime = 10, 30
 Group4.speed = 7, 10
-Group4.nrofHosts = 64
+Group4.nrofHosts = 16
 Group4.nrofInterfaces = 3
 Group4.interface1 = highPowerInterface
 Group4.interface2 = mediumPowerInterface
@@ -139,7 +139,7 @@ Group5.groupID = i
 Group5.bufferSize = 100M
 Group5.movementModel = StationaryMovement
 Group5.nrofHosts = 1
-Group5.nodeLocation= 3300, 200
+Group5.nodeLocation= 1300, 200
 Group5.nrofInterfaces = 4
 Group5.interface1 = highPowerLongRangeInterface
 Group5.interface2 = highPowerInterface
@@ -151,34 +151,11 @@ Group6.bufferSize = 100M
 Group6.movementModel = StationaryMovement
 Group6.nrofHosts = 1
 Group6.nodeLocation= 2900, 2400
-Group6.nrofInterfaces = 1
+Group6.nrofInterfaces = 4
 Group6.interface1 = highPowerLongRangeInterface
 Group6.interface2 = highPowerInterface
 Group6.interface3 = mediumPowerInterface
 Group6.interface4 = lowPowerInterface
-
-Group7.groupID = i
-Group7.bufferSize = 100M
-Group7.movementModel = StationaryMovement
-Group7.nrofHosts = 1
-Group7.nodeLocation= 1900, 2400
-Group7.nrofInterfaces = 1
-Group7.interface1 = highPowerLongRangeInterface
-Group7.interface2 = highPowerInterface
-Group7.interface3 = mediumPowerInterface
-Group7.interface4 = lowPowerInterface
-
-Group8.groupID = i
-Group8.bufferSize = 100M
-Group8.movementModel = StationaryMovement
-Group8.nrofHosts = 1
-Group8.nodeLocation= 900, 400
-Group8.nrofInterfaces = 1
-Group8.interface1 = highPowerLongRangeInterface
-Group8.interface2 = highPowerInterface
-Group8.interface3 = mediumPowerInterface
-Group8.interface4 = lowPowerInterface
-
 
 ## Message creation parameters
 # How many event generators

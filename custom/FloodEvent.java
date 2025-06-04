@@ -23,7 +23,7 @@ public class FloodEvent {
      * Default constructor that defines the location, growth rate and maximum area of the flood
      *
      * @param location Defines the location of the centre point of the flood
-     * @param radiusGrowthRate Defines how many meters the flood radius grows by per tick
+     * @param radiusGrowthRate Defines how many meters the flood radius grows by second
      * @param maxArea Defines the maximum area the flood will be able to cover, use -1 for unconstrained growth
      */
     public FloodEvent(Coord location, double radiusGrowthRate, double maxArea) {
@@ -85,14 +85,16 @@ public class FloodEvent {
 
     /**
      * Update the size of the flood based on the growth rate
+     * adjusted for amount of seconds the simulation has been running for
+     * since last update
      */
-    public void update()
+    public void update(double simulatedSeconds)
     {
         if (reachedMaxArea())
         {
             return;
         }
-        currentRadius += radiusGrowthRate;
+        currentRadius += simulatedSeconds * radiusGrowthRate;
     }
 
     /**
